@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template App</title>
+    <!-- メタディスクリプション - ページの内容を簡潔に説明（120-158文字推奨） -->
+    <meta name="description" content="ページの内容を簡潔に説明する文章。ユーザーの興味を引く重要なキーワードを自然な形で含める。検索結果に表示される重要な要素。">
+
+    <!-- メタキーワード - 現在はSEOへの直接的な影響は少ないが、参考として -->
+    <meta name="keywords" content="キーワード1, キーワード2, キーワード3">
+
+    <!-- SNSシェア時の表示設定（OGP） -->
+    <meta property="og:title" content="ページのタイトル">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com/">
+    <meta property="og:image" content="https://example.com/ogp.jpg">
+    <meta property="og:site_name" content="サイト名">
+    <meta property="og:description" content="ページの説明文">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@Twitterアカウント">
+
+    <!-- favicon設定 -->
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- canonical URL - 重複コンテンツの対策 -->
+    <link rel="canonical" href="https://example.com/current-page">
+
+    <!-- 検索エンジンへの指示 -->
+    <meta name="robots" content="index,follow">
+
+    <!-- Google Search Consoleの所有権確認用 -->
+    <meta name="google-site-verification" content="あなたの認証コード">
+
+    <!-- ページの言語設定 -->
+    <meta http-equiv="content-language" content="ja">
+
+    <!-- キャッシュの制御 -->
+    <meta http-equiv="cache-control" content="no-cache">
+
+    <!-- サイトマップへのリンク -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+    <!-- 構造化データ（JSON-LD） -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "サイト名",
+      "url": "https://example.com",
+      "description": "サイトの説明"
+    }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
