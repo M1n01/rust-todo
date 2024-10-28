@@ -153,8 +153,15 @@ mod tests {
                     completed: Some(true),
                 },
             )
-            .unwrap();
-        assert_eq!(todo, expected);
+            .expect("failed to update todo.");
+        assert_eq!(
+            Todo {
+                id,
+                text,
+                completed: true,
+            },
+            todo
+        );
 
         // delete
         repository.delete(id).unwrap();
