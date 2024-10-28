@@ -130,7 +130,7 @@ mod tests {
 
     #[tokio::test]
     async fn should_update_todo() {
-        let expected = Todo::new(1, "updated_todo".to_string());
+        let expected = Todo::new(1, "should_update_todo".to_string());
 
         let repository = TodoRepositoryForMemory::new();
         repository.create(CreateTodo::new("before_update_todo".to_string()));
