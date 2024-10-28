@@ -83,7 +83,7 @@ impl TodoRepository for TodoRepositoryForMemory {
     fn create(&self, payload: CreateTodo) -> Todo {
         let mut store = self.write_store_ref();
         let id = store.len() as i32 + 1;
-        let todo = Todo::new(id, payload.text);
+        let todo = Todo::new(id, payload.text.clone());
         store.insert(id, todo.clone());
         todo
     }
