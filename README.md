@@ -20,12 +20,18 @@
 ## 使用技術について
 
 ### フロントエンド
+- Vite
+- React
+- TypeScript
+- Mantine
 
 ### バックエンド
-
+- Rust
+- Axum
 
 ### ミドルウェア
-
+- Docker
+- PostgreSQL
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
@@ -40,7 +46,7 @@ $ git clone <repository>
 $ pnpm install
 
 // Rustのビルド
-$ cd wasm && wasm-pack build --target web
+$ cd backend && cargo build
 ```
 
 ### 各環境の立ち上げ
@@ -59,7 +65,46 @@ $ cd wasm && wasm-pack build --target web
 ## ディレクトリ構造
 
 ```
+$ tree . -L 3 -I "*/node_modules"
+.
+├── Makefile
+├── README.md
+├── backend
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── src
+│   │   ├── handlers.rs
+│   │   ├── main.rs
+│   │   └── repositories.rs
+│   └── target
+│       ├── CACHEDIR.TAG
+│       └── debug
+├── compose.yml
+├── eslint.config.mjs
+├── frontend
+│   ├── Dockerfile
+│   ├── index.html
+│   ├── package.json
+│   ├── pnpm-lock.yaml
+│   ├── public
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.tsx
+│   │   ├── assets
+│   │   ├── components
+│   │   ├── index.css
+│   │   ├── main.tsx
+│   │   ├── pages
+│   │   └── vite-env.d.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── package.json
+└── pnpm-lock.yaml
 
+11 directories, 26 files
 ```
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
