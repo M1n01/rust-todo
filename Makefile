@@ -48,7 +48,12 @@ build:
 	$(COMPOSE) build --no-cache
 
 local:
-	cd app/wasm && wasm-pack build --target web && cd - && pnpm dev
+	cd backend && \
+	sqlx db create && \
+	sqlx migrate run && \
+	cargo watch -x run
+#	cd - && \
+#	pnpm dev
 
 # ヘルプメッセージ
 help:
