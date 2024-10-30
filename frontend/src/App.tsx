@@ -5,8 +5,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import Home from './pages/Home';
-import Login from './pages/Login';
-// import Settings from './pages/Settings';
 
 const App: FC = () => {
   return (
@@ -14,8 +12,6 @@ const App: FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/settings" />
-          <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
     </MantineProvider>

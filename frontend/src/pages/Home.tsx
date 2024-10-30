@@ -1,21 +1,20 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
+import { Button, Card, Group, TextInput } from '@mantine/core';
+
 import Layout from '../components/Layout';
-import init, { greet } from '../../wasm/pkg/wasm';
 
 const Home: FC = () => {
-  useEffect(() => {
-    init();
-  }, []);
 
   return (
     <Layout>
-      <div className="card">
-        <button onClick={() => greet('App')}>greet</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <Card withBorder radius="md" p="md">
+        <TextInput placeholder="タスクを入力してください" label="タスク" />
+        <Group justify="flex-end">
+          <Button radius="md" mt="md">
+            追加
+          </Button>
+        </Group>
+      </Card>
     </Layout>
   );
 };
