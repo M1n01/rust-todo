@@ -4,7 +4,7 @@ import { NewTodoPayload, Todo } from '../types/todo';
 import TodoForm from '../components/TodoForm';
 import TodoList from '../components/TodoList';
 import Layout from '../components/Layout';
-import { addTodoItem, getTodoItems, updateTodoItem } from '../lib/api/todo';
+import { addTodoItem, getTodoItems, updateTodoItem, deleteTodoItem } from '../lib/api/todo';
 
 const Home: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -26,6 +26,12 @@ const Home: FC = () => {
     setTodos(todos);
   };
 
+  const onDelete = async (id: number) => {
+    await deleteTodoItem(id);
+    const todos = await getTodoItems();
+    setTodos(todos);
+  };
+
   useEffect(() => {
     ;(async () => {
       const newTodos = await getTodoItems();
@@ -39,7 +45,7 @@ const Home: FC = () => {
       <Box>
         <Stack>
           <TodoForm onSubmit={onSubmit} />
-          <TodoList todos={todos} onUpdate={onUpdate} onDelete={() => {}} />
+          <TodoList todos={todos} onUpdate={onUpdate} onDelete={onDelete} />
         </Stack>
       </Box>
     </Layout>
