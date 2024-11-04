@@ -49,9 +49,9 @@ build:
 
 local: up
 	cd backend && \
-	cargo watch -x run
-#	cd - && \
-#	pnpm dev
+	cargo watch -x run && \
+	cd - && \
+	pnpm dev
 
 test:
 	cd backend && \
