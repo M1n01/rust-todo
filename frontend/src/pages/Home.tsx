@@ -1,20 +1,33 @@
-import { FC } from 'react';
-import { Button, Card, Group, TextInput } from '@mantine/core';
+import { FC, useState } from 'react';
+import { Box } from '@mantine/core';
+import { NewTodoPayload, Todo } from '../types/todo';
+import TodoForm from '../components/TodoForm';
 
 import Layout from '../components/Layout';
 
 const Home: FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const createdId = () => todos.length + 1;
 
+  // point1
+  const onSubmit = async (payload: NewTodoPayload) => {
+    if (!payload.text) return;
+    setTodos((prev) =>[
+      {
+        id: createdId(),
+        text: payload.text,
+        completed: false,
+      },
+      ...prev,
+    ]);
+  };
+
+  // point2
   return (
     <Layout>
-      <Card withBorder radius="md" p="md">
-        <TextInput placeholder="タスクを入力してください" label="タスク" />
-        <Group justify="flex-end">
-          <Button radius="md" mt="md">
-            追加
-          </Button>
-        </Group>
-      </Card>
+      <Box>
+        <TodoForm onSubmit={onSubmit} />
+      </Box>
     </Layout>
   );
 };

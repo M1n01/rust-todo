@@ -6,7 +6,7 @@ const Header: FC<{ opened: boolean; toggle: () => void }> = ({ opened, toggle })
     <AppShell.Header p="md">
       <Group h="100%" px="md">
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        <Title>App Title</Title>
+        <Title>Todo App</Title>
       </Group>
     </AppShell.Header>
   );
