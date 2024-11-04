@@ -47,10 +47,8 @@ ps:
 build:
 	$(COMPOSE) build --no-cache
 
-local:
+local: up
 	cd backend && \
-	sqlx db create && \
-	sqlx migrate run && \
 	cargo watch -x run
 #	cd - && \
 #	pnpm dev
