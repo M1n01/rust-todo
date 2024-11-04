@@ -47,8 +47,19 @@ ps:
 build:
 	$(COMPOSE) build --no-cache
 
-local:
-	cd app/wasm && wasm-pack build --target web && cd - && pnpm dev
+local: up
+	cd backend && \
+	cargo watch -x run
+#	cd - && \
+#	pnpm dev
+
+test:
+	cd backend && \
+	cargo test
+
+test-s:
+	cd backend && \
+	cargo test --no-default-features
 
 # ヘルプメッセージ
 help:
