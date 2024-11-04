@@ -23,9 +23,10 @@ async fn main() {
 
     let database_url = &env::var("DATABASE_URL").expect("DATABASE_URL is not set.");
     tracing::debug!("start connect database to {}", database_url);
-    let pool = PgPool::connect(database_url)
-        .await
-        .expect(&format!("Failed to connect database, url is {}", database_url));
+    let pool = PgPool::connect(database_url).await.expect(&format!(
+        "Failed to connect database, url is {}",
+        database_url
+    ));
 
     let repository = TodoRepositoryForDb::new(pool);
     let app = create_app(repository);
@@ -58,8 +59,7 @@ async fn root() -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::repositories::{CreateTodo, Todo, TodoRepositoryForMemory};
-    use axum::http::method;
+    use crate::repositories::{test_utils::TodoRepositoryForMemory, CreateTodo, Todo};
     use axum::response::Response;
     use axum::{
         body::Body,
