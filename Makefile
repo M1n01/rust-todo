@@ -55,6 +55,14 @@ local:
 #	cd - && \
 #	pnpm dev
 
+test:
+	cd backend && \
+	cargo test
+
+test-s:
+	cd backend && \
+	cargo test --no-default-features
+
 # ヘルプメッセージ
 help:
 	@echo "使用可能なコマンド:"
