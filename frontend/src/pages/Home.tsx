@@ -1,10 +1,11 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Box, Stack } from '@mantine/core';
 import { NewTodoPayload, Todo } from '../types/todo';
 import TodoForm from '../components/TodoForm';
 import TodoList from '../components/TodoList';
 import Layout from '../components/Layout';
-import { addTodoItem } from '../lib/api/todo';
+import { addTodoItem, getTodoItems } from '../lib/api/todo';
+
 const Home: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
@@ -12,8 +13,10 @@ const Home: FC = () => {
   const onSubmit = async (payload: NewTodoPayload) => {
     if (!payload.text) return;
 
-    const newTodo = await addTodoItem(payload);
-    setTodos((prev) => [newTodo, ...prev]);
+    await addTodoItem(payload);
+    // APIより再度Todo配列を取得
+    const newTodos = await getTodoItems();
+    setTodos(newTodos);
   };
 
   const onUpdate = (updatedTodo: Todo) => {
@@ -29,6 +32,13 @@ const Home: FC = () => {
       })
     );
   };
+
+  useEffect(() => {
+    ;(async () => {
+      const newTodos = await getTodoItems();
+      setTodos(newTodos);
+    })();
+  }, []);
 
   // point2
   return (
