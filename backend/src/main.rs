@@ -9,9 +9,11 @@ use axum::{
 };
 use dotenv::dotenv;
 use handlers::{all_todos, create_todo, delete_todo, find_todo, update_todo};
+use hyper::header::CONTENT_TYPE;
 use sqlx::PgPool;
 use std::net::SocketAddr;
 use std::{env, sync::Arc};
+use tower_http::cors::{Any, CorsLayer, Origin};
 
 #[tokio::main]
 async fn main() {
@@ -50,6 +52,12 @@ fn create_app<T: TodoRepository>(repository: T) -> Router {
                 .patch(update_todo::<T>),
         )
         .layer(Extension(Arc::new(repository)))
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Origin::exact("http://localhost:5173".parse().unwrap()))
+                .allow_methods(Any)
+                .allow_headers(vec![CONTENT_TYPE]),
+        )
 }
 
 async fn root() -> &'static str {
