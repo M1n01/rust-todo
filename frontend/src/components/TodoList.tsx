@@ -1,35 +1,27 @@
 import { FC } from 'react';
 import type { Todo } from '../types/todo';
-import { Card, Checkbox, Stack, Group, Title, Text } from '@mantine/core';
+import { Stack, Group, Title} from '@mantine/core';
+import TodoItem from './TodoItem';
 
 // point1
 type Props = {
   todos: Todo[];
   onUpdate: (todo: Todo) => void;
+  onDelete: (id: number) => void;
 };
 
-const TodoList: FC<Props> = ({ todos, onUpdate }) => {
-  // point2
-  const handleCompletedCheckbox = (todo: Todo) => {
-    onUpdate({
-      ...todo,
-      completed: !todo.completed,
-    });
-  };
+const TodoList: FC<Props> = ({ todos, onUpdate, onDelete }) => {
 
-  // point3
   return (
     <Stack>
       <Title order={3} style={{ textAlign: 'left' }}>Todo List</Title>
       {todos.map((todo) => (
-        <Card key={todo.id}>
-            <Checkbox
-              checked={todo.completed}
-              onChange={() => handleCompletedCheckbox(todo)}
-              variant="outline"
-              label={todo.text}
-            />
-        </Card>
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+        />
       ))}
     </Stack>
   );

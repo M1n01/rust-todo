@@ -4,7 +4,7 @@ import { NewTodoPayload, Todo } from '../types/todo';
 import TodoForm from '../components/TodoForm';
 import TodoList from '../components/TodoList';
 import Layout from '../components/Layout';
-import { addTodoItem, getTodoItems } from '../lib/api/todo';
+import { addTodoItem, getTodoItems, updateTodoItem } from '../lib/api/todo';
 
 const Home: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,18 +19,11 @@ const Home: FC = () => {
     setTodos(newTodos);
   };
 
-  const onUpdate = (updatedTodo: Todo) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === updatedTodo.id) {
-          return {
-            ...todo,
-            ...updatedTodo, // 必要な部分だけoverride
-          };
-        }
-        return todo;
-      })
-    );
+  const onUpdate = async (updatedTodo: Todo) => {
+    await updateTodoItem(updatedTodo);
+    // APIより再度Todo配列を取得
+    const todos = await getTodoItems();
+    setTodos(todos);
   };
 
   useEffect(() => {
@@ -46,7 +39,7 @@ const Home: FC = () => {
       <Box>
         <Stack>
           <TodoForm onSubmit={onSubmit} />
-          <TodoList todos={todos} onUpdate={onUpdate} />
+          <TodoList todos={todos} onUpdate={onUpdate} onDelete={() => {}} />
         </Stack>
       </Box>
     </Layout>

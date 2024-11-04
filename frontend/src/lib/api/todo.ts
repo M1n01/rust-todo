@@ -23,3 +23,19 @@ export const getTodoItems = async () => {
   const json: Todo[] = await res.json();
   return json;
 };
+
+export const updateTodoItem = async (todo: Todo) => {
+  const { id, ...updateTodo } = todo;
+  const res = await fetch(`http://localhost:3000/todos/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateTodo),
+  });
+  if (!res.ok) {
+    throw new Error('Failed to update todo item');
+  }
+  const json: Todo = await res.json();
+  return json;
+};
