@@ -27,7 +27,6 @@
 
 ### バックエンド
 - Rust
-- Axum
 
 ### ミドルウェア
 - Docker
@@ -52,13 +51,24 @@ $ cd backend && cargo build
 ### 各環境の立ち上げ
 
 ```
+// DBの立ち上げ
+$ make up
 
+// バックエンドの立ち上げ
+$ cd backend && cargo watch -x run
+
+// フロントエンドの立ち上げ(別ターミナルを開く)
+// プロジェクトルートで行う
+$ pnpm dev
 ```
 
 ### アクセス方法
-```
 
-```
+- フロントエンド
+  http://localhost:5173/
+
+- バックエンド
+  http://localhost:3000/
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
