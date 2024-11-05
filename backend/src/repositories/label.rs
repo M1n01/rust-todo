@@ -1,6 +1,7 @@
 use axum::async_trait;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use super::RepositoryError;
 
 #[async_trait]
 pub trait LabelRepository: Clone + std::marker::Send + std::marker::Sync + 'static {
@@ -35,15 +36,62 @@ impl LabelRepositoryForDb {
 #[async_trait]
 impl LabelRepository for LabelRepositoryForDb {
     async fn create(&self, name: String) -> anyhow::Result<Label> {
-        todo!()
+        let optional_label = sqlx::query_as::<_, Label>(
+            r#"
+select * from labels where name=$1
+            "#,
+        )
+        .bind(name.clone())
+        .fetch_optional(&self.pool)
+        .await?;
+
+        // point1
+        if let Some(label) = optional_label {
+            return Err(RepositoryError::Duplicated(label.id).into());
+        }
+
+        let label = sqlx::query_as::<_, Label>(
+            r#"
+insert into labels (name)
+values ($1)
+returning *
+            "#,
+        )
+        .bind(name.clone())
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(label)
     }
 
     async fn all(&self) -> anyhow::Result<Vec<Label>> {
-        todo!()
+        let labels = sqlx::query_as::<_, Label>(
+            r#"
+select * from labels
+order by labels.id asc;
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(labels)
     }
 
     async fn delete(&self, id: i32) -> anyhow::Result<()> {
-        todo!()
+        sqlx::query(
+            r#"
+delete from labels where id=$1
+            "#,
+        )
+        .bind(id)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| match e {
+            sqlx::Error::RowNotFound => RepositoryError::NotFound(id),
+            _ => RepositoryError::Unexpected(e.to_string()),
+        })?;
+
+        Ok(())
     }
 }
 
