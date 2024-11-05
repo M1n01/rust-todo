@@ -3,14 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use thiserror::Error;
 use validator::Validate;
-
-#[derive(Error, Debug)]
-enum RepositoryError {
-    #[error("Unexpected Error, {0}")]
-    Unexpected(String),
-    #[error("NotFound, id is {0}")]
-    NotFound(i32),
-}
+use super::RepositoryError;
 
 #[async_trait]
 pub trait TodoRepository: Clone + Send + Sync + 'static {
