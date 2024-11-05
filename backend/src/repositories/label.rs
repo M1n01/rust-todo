@@ -135,7 +135,7 @@ mod test {
 }
 
 #[cfg(test)]
-mod test_utils {
+pub mod test_utils {
     use axum::async_trait;
     use std::{
         collections::HashMap,
