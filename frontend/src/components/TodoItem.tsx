@@ -1,8 +1,8 @@
 import { FC, ChangeEventHandler, useState, useEffect } from 'react';
 import { Card, Checkbox, Button, Group, Modal, TextInput, Stack, Box } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { IconTrash, IconEdit } from '@tabler/icons-react';
 import type { Todo } from '../types/todo';
-import { modalInnerStyle } from '../styles/modal';
 
 type Props = {
   todo: Todo;
@@ -11,8 +11,8 @@ type Props = {
 };
 
 const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete }) => {
-  const [editing, setEditing] = useState(false);
-  const [editText, setEditText] = useState('');
+  const [opened, { open, close }] = useDisclosure(false);
+  const [editText, setEditText] = useState(todo.text);
 
   // propsのtodo変更時に再度初期化
   useEffect(() => {
@@ -26,12 +26,12 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete }) => {
     });
   };
 
-  const onCloseEditModal = () => {
+  const handleCloseModal = () => {
     onUpdate({
       ...todo,
       text: editText,
     });
-    setEditing(false);
+    close();
   };
 
   const handleDelete = () => onDelete(todo.id);
@@ -46,25 +46,30 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete }) => {
           label={todo.text}
         />
         <Group>
-          <Button onClick={() => setEditing(true)} leftSection={<IconEdit />} variant="light">Edit</Button>
-          <Button onClick={handleDelete} color="red" leftSection={<IconTrash />} variant="light">Delete</Button>
+          <Button onClick={open} leftSection={<IconEdit />} variant="light">
+            Edit
+          </Button>
+          <Button onClick={handleDelete} color="red" leftSection={<IconTrash />} variant="light">
+            Delete
+          </Button>
         </Group>
       </Group>
       <Modal
-        opened={editing}
-        onClose={onCloseEditModal}
+        opened={opened}
+        onClose={handleCloseModal}
         title="Edit Todo"
       >
-        {/* <Box style={{
-          ...modalInnerStyle,
-          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-        }}> */}
-        <TextInput
-          value={todo.text}
-          label="Todo text"
-          onChange={(e) => setEditText(e.target.value)}
-        />
-        {/* </Box> */}
+        <Box
+          // style={{
+          //   ...modalInnerStyle,
+          // }}
+        >
+          <TextInput
+            value={editText}
+            label="Todo text"
+            onChange={(e) => setEditText(e.target.value)}
+          />
+        </Box>
       </Modal>
     </Card>
   );
