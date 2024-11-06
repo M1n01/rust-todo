@@ -10,33 +10,47 @@ use axum::{
 use dotenv::dotenv;
 use handlers::{all_todos, create_todo, delete_todo, find_todo, update_todo};
 use hyper::header::CONTENT_TYPE;
+use shuttle_runtime::CustomError;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 
-#[tokio::main]
-async fn main() {
+#[shuttle_runtime::main]
+async fn axum(
+    #[shuttle_shared_db::Postgres(local_uri = "postgres://postgres:admin@localhost:5432/todos")]
+    pool: PgPool,
+) -> shuttle_axum::ShuttleAxum {
     // loggingの初期化
     let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
     env::set_var("RUST_LOG", log_level);
-    tracing_subscriber::fmt::init();
-    dotenv().ok();
 
-    let database_url = &env::var("DATABASE_URL").expect("DATABASE_URL is not set.");
-    tracing::debug!("start connect database to {}", database_url);
-    let pool = PgPool::connect(database_url).await.expect(&format!(
-        "Failed to connect database, url is {}",
-        database_url
-    ));
+    sqlx::migrate!()
+        .run(&pool)
+        .await
+        .map_err(CustomError::new)?;
 
-    let repository = TodoRepositoryForDb::new(pool);
-    let app = create_app(repository);
+    // tracing_subscriber::fmt::init();
+    // dotenv().ok();
+
+    // let database_url = &env::var("DATABASE_URL").expect("DATABASE_URL is not set.");
+    // tracing::debug!("start connect database to {}", database_url);
+    // let pool = PgPool::connect(database_url).await.expect(&format!(
+    //     "Failed to connect database, url is {}",
+    //     database_url
+    // ));
+
+    // let repository = TodoRepositoryForDb::new(pool);
+    // let app = create_app(repository);
+    let app = create_app(TodoRepositoryForDb::new(pool.clone()));
+
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
     tracing::debug!("listening on {:?}", listener);
 
     axum::serve(listener, app).await.unwrap();
+
+    Ok(app.into())
 }
 
 fn create_app<T: TodoRepository>(repository: T) -> Router {
@@ -70,7 +84,6 @@ async fn root() -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tower::ServiceExt;
     use crate::repositories::{test_utils::TodoRepositoryForMemory, CreateTodo, Todo};
     use axum::response::Response;
     use axum::{
@@ -80,6 +93,7 @@ mod tests {
     };
     use mime::APPLICATION_JSON;
     use std::usize;
+    use tower::ServiceExt;
 
     fn build_todo_req_with_json(path: &str, method: Method, json_body: String) -> Request<Body> {
         Request::builder()
