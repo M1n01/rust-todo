@@ -70,6 +70,7 @@ async fn root() -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tower::ServiceExt;
     use crate::repositories::{test_utils::TodoRepositoryForMemory, CreateTodo, Todo};
     use axum::response::Response;
     use axum::{
@@ -79,7 +80,6 @@ mod tests {
     };
     use mime::APPLICATION_JSON;
     use std::usize;
-    use tower::ServiceExt;
 
     fn build_todo_req_with_json(path: &str, method: Method, json_body: String) -> Request<Body> {
         Request::builder()
