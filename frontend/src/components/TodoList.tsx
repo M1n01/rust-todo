@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import type { Todo } from '../types/todo';
-import { Stack, Group, Title} from '@mantine/core';
+import { Stack, Title} from '@mantine/core';
 import TodoItem from './TodoItem';
 
 // point1

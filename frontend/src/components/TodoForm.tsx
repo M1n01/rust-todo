@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { NewTodoPayload } from '../types/todo';
-import { TextInput, Button, Group, Paper, Grid, Box } from '@mantine/core';
+import { TextInput, Button, Paper, Grid, Box } from '@mantine/core';
 
 // point1
 type Props = {

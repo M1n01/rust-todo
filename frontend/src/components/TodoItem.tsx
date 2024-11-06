@@ -1,5 +1,5 @@
 import { FC, ChangeEventHandler, useState, useEffect } from 'react';
-import { Card, Checkbox, Button, Group, Modal, TextInput, Stack, Box } from '@mantine/core';
+import { Card, Checkbox, Button, Group, Modal, TextInput, Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconTrash, IconEdit } from '@tabler/icons-react';
 import type { Todo } from '../types/todo';
@@ -19,7 +19,7 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete }) => {
     setEditText(todo.text);
   }, [todo]);
 
-  const handleCompletedCheckbox: ChangeEventHandler = (e) => {
+  const handleCompletedCheckbox: ChangeEventHandler = () => {
     onUpdate({
       ...todo,
       completed: !todo.completed,
