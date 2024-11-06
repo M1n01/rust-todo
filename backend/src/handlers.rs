@@ -1,6 +1,6 @@
 use axum::{
     async_trait,
-    extract::{Extension, FromRequest, Path, RequestParts},
+    extract::{rejection::JsonRejection, Extension, FromRequest, Path, Request},
     http::StatusCode,
     response::IntoResponse,
     BoxError, Json,
@@ -14,21 +14,23 @@ use crate::repositories::{CreateTodo, TodoRepository, UpdateTodo};
 #[derive(Debug)]
 pub struct ValidatedJson<T>(T);
 
+// リクエストのボディをパースして、バリデーションを行う（バージョンアップに伴い修正済み）
 #[async_trait]
-impl<T, B> FromRequest<B> for ValidatedJson<T>
+impl<T, S> FromRequest<S> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate,
-    B: http_body::Body + Send,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
+    S: Send + Sync,
+    Json<T>: FromRequest<S, Rejection = JsonRejection>,
 {
     type Rejection = (StatusCode, String);
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let Json(value) = Json::<T>::from_request(req).await.map_err(|rejection| {
-            let message = format!("Json parse error: [{}]", rejection);
-            (StatusCode::BAD_REQUEST, message)
-        })?;
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        let Json(value) = Json::<T>::from_request(req, state)
+            .await
+            .map_err(|rejection| {
+                let message = format!("Json parse error: [{}]", rejection);
+                (StatusCode::BAD_REQUEST, message)
+            })?;
         value.validate().map_err(|rejection| {
             let message = format!("Validation error: [{}]", rejection).replace('\n', ", ");
             (StatusCode::BAD_REQUEST, message)
@@ -38,8 +40,8 @@ where
 }
 
 pub async fn create_todo<T: TodoRepository>(
-    ValidatedJson(payload): ValidatedJson<CreateTodo>,
     Extension(repository): Extension<Arc<T>>,
+    ValidatedJson(payload): ValidatedJson<CreateTodo>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let todo = repository
         .create(payload)
@@ -67,9 +69,9 @@ pub async fn all_todos<T: TodoRepository>(
 }
 
 pub async fn update_todo<T: TodoRepository>(
+    Extension(repository): Extension<Arc<T>>,
     Path(id): Path<i32>,
     ValidatedJson(payload): ValidatedJson<UpdateTodo>,
-    Extension(repository): Extension<Arc<T>>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let todo = repository
         .update(id, payload)

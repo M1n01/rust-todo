@@ -11,7 +11,6 @@ use dotenv::dotenv;
 use handlers::{all_todos, create_todo, delete_todo, find_todo, update_todo};
 use hyper::header::CONTENT_TYPE;
 use sqlx::PgPool;
-use std::net::SocketAddr;
 use std::{env, sync::Arc};
 use tower_http::cors::{Any, CorsLayer, Origin};
 
@@ -32,13 +31,12 @@ async fn main() {
 
     let repository = TodoRepositoryForDb::new(pool);
     let app = create_app(repository);
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
-    tracing::debug!("listening on {}", addr);
-
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
+    tracing::debug!("listening on {:?}", listener);
+
+    axum::serve(listener, app).await.unwrap();
 }
 
 fn create_app<T: TodoRepository>(repository: T) -> Router {
@@ -66,11 +64,13 @@ async fn root() -> &'static str {
 
 #[cfg(test)]
 mod tests {
+    use std::usize;
     use super::*;
     use crate::repositories::{test_utils::TodoRepositoryForMemory, CreateTodo, Todo};
     use axum::response::Response;
     use axum::{
         body::Body,
+        body::to_bytes,
         http::{header, Method, Request, StatusCode},
     };
     use mime::APPLICATION_JSON;
@@ -95,7 +95,7 @@ mod tests {
     }
 
     async fn res_to_todo(res: Response) -> Todo {
-        let bytes = hyper::body::to_bytes(res.into_body()).await.unwrap();
+        let bytes = to_bytes(res.into_body(), usize::MAX).await.unwrap();
         let body: String = String::from_utf8(bytes.to_vec()).unwrap();
         let todo: Todo = serde_json::from_str(&body)
             .expect(&format!("cannot convert Todo instance. body: {}", body));
@@ -144,7 +144,7 @@ mod tests {
             .expect("failed to create todo.");
         let req = build_todo_req_with_empty(Method::GET, "/todos");
         let res = create_app(repository).oneshot(req).await.unwrap();
-        let bytes = hyper::body::to_bytes(res.into_body()).await.unwrap();
+        let bytes = to_bytes(res.into_body(), usize::MAX).await.unwrap();
         let body: String = String::from_utf8(bytes.to_vec()).unwrap();
         let todos: Vec<Todo> = serde_json::from_str(&body)
             .expect(&format!("cannot convert Todo instance. body: {}", body));
@@ -193,7 +193,7 @@ mod tests {
         let req = Request::builder().uri("/").body(Body::empty()).unwrap();
         let res = create_app(repository).oneshot(req).await.unwrap();
 
-        let bytes = hyper::body::to_bytes(res.into_body()).await.unwrap();
+        let bytes = to_bytes(res.into_body(), usize::MAX).await.unwrap();
         let body: String = String::from_utf8(bytes.to_vec()).unwrap();
 
         assert_eq!(body, "Hello, world!");
