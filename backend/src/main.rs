@@ -12,7 +12,7 @@ use handlers::{all_todos, create_todo, delete_todo, find_todo, update_todo};
 use hyper::header::CONTENT_TYPE;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
-use tower_http::cors::{Any, CorsLayer, Origin};
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 
 #[tokio::main]
 async fn main() {
@@ -40,6 +40,16 @@ async fn main() {
 }
 
 fn create_app<T: TodoRepository>(repository: T) -> Router {
+    let allowed_origins = vec![
+        "http://localhost:5173".parse().unwrap(),
+        "http://127.0.0.1:5173".parse().unwrap(),
+    ];
+
+    let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::list(allowed_origins))
+        .allow_methods(Any)
+        .allow_headers(vec![CONTENT_TYPE]);
+
     Router::new()
         .route("/", get(root))
         .route("/todos", post(create_todo::<T>).get(all_todos::<T>))
@@ -50,12 +60,7 @@ fn create_app<T: TodoRepository>(repository: T) -> Router {
                 .patch(update_todo::<T>),
         )
         .layer(Extension(Arc::new(repository)))
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Origin::exact("http://localhost:5173".parse().unwrap()))
-                .allow_methods(Any)
-                .allow_headers(vec![CONTENT_TYPE]),
-        )
+        .layer(cors)
 }
 
 async fn root() -> &'static str {
@@ -64,16 +69,16 @@ async fn root() -> &'static str {
 
 #[cfg(test)]
 mod tests {
-    use std::usize;
     use super::*;
     use crate::repositories::{test_utils::TodoRepositoryForMemory, CreateTodo, Todo};
     use axum::response::Response;
     use axum::{
-        body::Body,
         body::to_bytes,
+        body::Body,
         http::{header, Method, Request, StatusCode},
     };
     use mime::APPLICATION_JSON;
+    use std::usize;
     use tower::ServiceExt;
 
     fn build_todo_req_with_json(path: &str, method: Method, json_body: String) -> Request<Body> {
