@@ -95,7 +95,7 @@ returning *
         Ok(fold_entity(todo))
     }
 
-    async fn find(&self, id: i32) -> anyhow::Result<TodoWithLabelFromRow> {
+    async fn find(&self, id: i32) -> anyhow::Result<TodoEntity> {
         let todo = sqlx::query_as::<_, TodoWithLabelFromRow>(
             r#"
 select * from todos where id = $1
@@ -109,10 +109,10 @@ select * from todos where id = $1
             _ => RepositoryError::Unexpected(e.to_string()),
         })?;
 
-        Ok(todo)
+        Ok(fold_entity(todo))
     }
 
-    async fn all(&self) -> anyhow::Result<Vec<TodoWithLabelFromRow>> {
+    async fn all(&self) -> anyhow::Result<Vec<TodoEntity>> {
         let todos = sqlx::query_as::<_, TodoWithLabelFromRow>(
             r#"
 select * from todos
@@ -122,10 +122,10 @@ order by id desc
         .fetch_all(&self.pool)
         .await?;
 
-        Ok(todos)
+        Ok(fold_entities(todos))
     }
 
-    async fn update(&self, id: i32, payload: UpdateTodo) -> anyhow::Result<TodoWithLabelFromRow> {
+    async fn update(&self, id: i32, payload: UpdateTodo) -> anyhow::Result<TodoEntity> {
         let old_todo = self.find(id).await?; // 最適化可能
         let todo = sqlx::query_as::<_, TodoWithLabelFromRow>(
             r#"
@@ -140,7 +140,7 @@ returning *
         .fetch_one(&self.pool)
         .await?;
 
-        Ok(todo)
+        Ok(fold_entity(todo))
     }
 
     async fn delete(&self, id: i32) -> anyhow::Result<()> {
