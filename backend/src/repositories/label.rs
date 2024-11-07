@@ -52,8 +52,8 @@ select * from labels where name=$1
 
         let label = sqlx::query_as::<_, Label>(
             r#"
-insert into labels (name)
-values ($1)
+insert into labels ( name )
+values ( $1 )
 returning *
             "#,
         )

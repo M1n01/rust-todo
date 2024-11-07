@@ -142,11 +142,11 @@ select todos.*, labels.id as label_id, labels.name as label_name
 from todos
     left outer join todo_labels tl on todos.id = tl.todo_id
     left outer join labels on labels.id = tl.label_id
-where todos.id=$1
-            "#,
+where todos.id=$1;
+        "#,
         )
         .bind(id)
-        .fetch_one(&self.pool)
+        .fetch_all(&self.pool)
         .await
         .map_err(|e| match e {
             sqlx::Error::RowNotFound => RepositoryError::NotFound(id),
@@ -177,13 +177,14 @@ order by todos.id desc
     async fn update(&self, id: i32, payload: UpdateTodo) -> anyhow::Result<TodoEntity> {
         let tx = self.pool.begin().await?;
 
-        let old_todo = self.find(id).await?; // 最適化可能
+        // todo update
+        let old_todo = self.find(id).await?;
         sqlx::query(
             r#"
 update todos set text=$1, completed=$2
 where id=$3
 returning *
-            "#,
+        "#,
         )
         .bind(payload.text.unwrap_or(old_todo.text))
         .bind(payload.completed.unwrap_or(old_todo.completed))
@@ -196,25 +197,25 @@ returning *
             // 一度関連するレコードを削除
             sqlx::query(
                 r#"
-delete from todo_labels where todo_id = $1
-                "#,
+delete from todo_labels where todo_id=$1
+            "#,
             )
             .bind(id)
             .execute(&self.pool)
             .await?;
-        }
 
-        sqlx::query(
+            sqlx::query(
             r#"
 insert into todo_labels (todo_id, label_id)
 select $1, id
-from unnest($2) as t(id)
+from unnest($2) as t(id);
             "#,
-        )
-        .bind(id)
-        .bind(labels)
-        .execute(&self.pool)
-        .await?;
+            )
+            .bind(id)
+            .bind(labels)
+            .execute(&self.pool)
+            .await?;
+        };
 
         tx.commit().await?;
         let todo = self.find(id).await?;
@@ -277,17 +278,24 @@ mod test {
         let rows = vec![
             TodoWithLabelFromRow {
                 id: 1,
-                text: String::from("text_1"),
+                text: String::from("todo 1"),
                 completed: false,
                 label_id: Some(label_1.id),
                 label_name: Some(label_1.name.clone()),
             },
             TodoWithLabelFromRow {
-                id: 2,
-                text: String::from("text_2"),
+                id: 1,
+                text: String::from("todo 1"),
                 completed: false,
                 label_id: Some(label_2.id),
                 label_name: Some(label_2.name.clone()),
+            },
+            TodoWithLabelFromRow {
+                id: 2,
+                text: String::from("todo 2"),
+                completed: false,
+                label_id: Some(label_1.id),
+                label_name: Some(label_1.name.clone()),
             },
         ];
         let res = fold_entities(rows);
@@ -296,15 +304,15 @@ mod test {
             vec![
                 TodoEntity {
                     id: 1,
-                    text: "text_1".to_string(),
+                    text: "todo 1".to_string(),
                     completed: false,
                     labels: vec![label_1.clone(), label_2.clone()]
                 },
                 TodoEntity {
                     id: 2,
-                    text: "text_2".to_string(),
+                    text: "todo 2".to_string(),
                     completed: false,
-                    labels: vec![label_1.clone(), label_2.clone()]
+                    labels: vec![label_1.clone()]
                 },
             ]
         );
@@ -422,12 +430,12 @@ pub mod test_utils {
     use super::*;
 
     impl TodoEntity {
-        pub fn new(id: i32, text: String) -> Self {
+        pub fn new(id: i32, text: String, labels: Vec<Label>) -> Self {
             Self {
                 id,
                 text,
                 completed: false,
-                labels: vec![],
+                labels,
             }
         }
     }
@@ -443,12 +451,14 @@ pub mod test_utils {
     #[derive(Debug, Clone)]
     pub struct TodoRepositoryForMemory {
         store: Arc<RwLock<TodoDatas>>,
+        labels: Vec<Label>,
     }
 
     impl TodoRepositoryForMemory {
-        pub fn new() -> Self {
+        pub fn new(labels: Vec<Label>) -> Self {
             TodoRepositoryForMemory {
                 store: Arc::default(),
+                labels,
             }
         }
 
@@ -459,6 +469,15 @@ pub mod test_utils {
         fn read_store_ref(&self) -> RwLockReadGuard<TodoDatas> {
             self.store.read().unwrap()
         }
+
+        fn resolve_labels(&self, labels: Vec<i32>) -> Vec<Label> {
+            let mut label_list = self.labels.iter().cloned();
+            let labels = labels
+                .iter()
+                .map(|id| label_list.find(|label| label.id == *id).unwrap())
+                .collect();
+            labels
+        }
     }
 
     #[async_trait]
@@ -466,7 +485,8 @@ pub mod test_utils {
         async fn create(&self, payload: CreateTodo) -> anyhow::Result<TodoEntity> {
             let mut store = self.write_store_ref();
             let id = store.len() as i32 + 1;
-            let todo = TodoEntity::new(id, payload.text.clone());
+            let labels = self.resolve_labels(payload.labels);
+            let todo = TodoEntity::new(id, payload.text.clone(), labels);
             store.insert(id, todo.clone());
             Ok(todo)
         }
@@ -490,11 +510,15 @@ pub mod test_utils {
             let todo = store.get(&id).context(RepositoryError::NotFound(id))?;
             let text = payload.text.unwrap_or(todo.text.clone());
             let completed = payload.completed.unwrap_or(todo.completed);
+            let labels = match payload.labels {
+                Some(labels) => self.resolve_labels(labels),
+                None => todo.labels.clone(),
+            };
             let todo = TodoEntity {
                 id,
                 text,
                 completed,
-                labels: todo.labels.clone(),
+                labels,
             };
             store.insert(id, todo.clone());
             Ok(todo)
@@ -514,26 +538,38 @@ pub mod test_utils {
         async fn todo_crud_scenario() {
             let text = "todo text".to_string();
             let id = 1;
-            let expected = TodoEntity::new(id, text.clone());
+            let label_data = Label {
+                id: 1,
+                name: String::from("test label"),
+            };
+            let labels = vec![label_data.clone()];
+            let expected = TodoEntity {
+                id,
+                text: text.clone(),
+                completed: false,
+                labels: labels.clone(),
+            };
 
             // create
-            todo!("labelデータの追加");
-            let labels = vec![];
-            let repository = TodoRepositoryForMemory::new();
+            let label_data = Label {
+                id: 1,
+                name: String::from("test label"),
+            };
+            let labels = vec![label_data.clone()];
+            let repository = TodoRepositoryForMemory::new(labels.clone());
             let todo = repository
-                .create(CreateTodo::new(text, labels))
+                .create(CreateTodo::new(text, vec![label_data.id]))
                 .await
                 .expect("failed to create todo.");
             assert_eq!(todo, expected);
 
             // find
-            let todo = repository.find(id).await.unwrap();
+            let todo = repository.find(todo.id).await.unwrap();
             assert_eq!(todo, expected);
 
             // all
-            let todos = repository.all().await.expect("failed to get all todos.");
-            assert_eq!(todos.len(), 1);
-            assert_eq!(todos[0], expected);
+            let todo = repository.all().await.expect("failed to get all todos.");
+            assert_eq!(todo, vec![expected]);
 
             // update
             let text = "updated todo text".to_string();
