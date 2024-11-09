@@ -13,8 +13,8 @@ use crate::repositories::label::LabelRepository;
 use super::ValidatedJson;
 
 pub async fn create_label<T: LabelRepository>(
-    ValidatedJson(payload): ValidatedJson<CreateLabel>,
     Extension(repository): Extension<Arc<T>>,
+    ValidatedJson(payload): ValidatedJson<CreateLabel>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let label = repository
         .create(payload.name)

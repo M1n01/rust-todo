@@ -11,8 +11,8 @@ use crate::repositories::todo::{CreateTodo, TodoRepository, UpdateTodo};
 use super::ValidatedJson;
 
 pub async fn create_todo<T: TodoRepository>(
-    ValidatedJson(payload): ValidatedJson<CreateTodo>,
     Extension(repository): Extension<Arc<T>>,
+    ValidatedJson(payload): ValidatedJson<CreateTodo>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let todo = repository
         .create(payload)
@@ -40,9 +40,9 @@ pub async fn all_todos<T: TodoRepository>(
 }
 
 pub async fn update_todo<T: TodoRepository>(
+    Extension(repository): Extension<Arc<T>>,
     Path(id): Path<i32>,
     ValidatedJson(payload): ValidatedJson<UpdateTodo>,
-    Extension(repository): Extension<Arc<T>>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let todo = repository
         .update(id, payload)
