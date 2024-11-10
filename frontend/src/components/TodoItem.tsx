@@ -21,7 +21,7 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete, labels }) => {
   useEffect(() => {
     setEditText(todo.text);
     setEditLabels(todo.labels);
-  }, [todo]);
+  }, [todo, labels]);
 
   const handleCompletedCheckbox: ChangeEventHandler = () => {
     onUpdate({
@@ -36,7 +36,7 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete, labels }) => {
       id: todo.id,
       text: editText,
       completed: todo.completed,
-      labels: todo.labels.map((label) => label.id),
+      labels: editLabels.map((label) => label.id),
     });
     close();
   };
@@ -93,7 +93,12 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete, labels }) => {
             <Stack>
               <Text size="md">Labels</Text>
               {labels.map((label) => (
-                <Checkbox checked={editLabels.includes(label)} key={label.id} label={label.name} onChange={() => setEditLabels((prev) => toggleLabels(prev, label))} />
+                <Checkbox
+                  key={label.id}
+                  label={label.name}
+                  checked={editLabels.some((editLabel) => editLabel.id === label.id)}
+                  onChange={() => setEditLabels((prev) => toggleLabels(prev, label))}
+                />
               ))}
             </Stack>
           </Stack>
