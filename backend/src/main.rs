@@ -41,9 +41,12 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
     //     database_url
     // ));
 
+    let app_url = env::var("APP_URL").expect("APP_URL is not set.");
+
     let app = create_app(
         TodoRepositoryForDb::new(pool.clone()),
         LabelRepositoryForDb::new(pool.clone()),
+        app_url,
     );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
@@ -57,10 +60,12 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
 fn create_app<Todo: TodoRepository, Label: LabelRepository>(
     todo_repository: Todo,
     label_repository: Label,
+    app_url: String,
 ) -> Router {
     let allowed_origins = vec![
         "http://localhost:5173".parse().unwrap(),
         "http://127.0.0.1:5173".parse().unwrap(),
+        app_url.parse().unwrap(),
     ];
 
     let cors = CorsLayer::new()
@@ -169,6 +174,7 @@ mod tests {
         let res = create_app(
             TodoRepositoryForMemory::new(labels),
             LabelRepositoryForMemory::new(),
+            "".to_string(),
         )
         .oneshot(req)
         .await
@@ -188,10 +194,14 @@ mod tests {
             .await
             .expect("failed to create todo.");
         let req = build_todo_req_with_empty(Method::GET, "/todos/1");
-        let res = create_app(todo_repository, LabelRepositoryForMemory::new())
-            .oneshot(req)
-            .await
-            .unwrap();
+        let res = create_app(
+            todo_repository,
+            LabelRepositoryForMemory::new(),
+            "".to_string(),
+        )
+        .oneshot(req)
+        .await
+        .unwrap();
         let todo = res_to_todo(res).await;
         assert_eq!(expected, todo);
     }
@@ -210,10 +220,14 @@ mod tests {
             .await
             .expect("failed to create todo.");
         let req = build_todo_req_with_empty(Method::GET, "/todos");
-        let res = create_app(todo_repository, LabelRepositoryForMemory::new())
-            .oneshot(req)
-            .await
-            .unwrap();
+        let res = create_app(
+            todo_repository,
+            LabelRepositoryForMemory::new(),
+            "".to_string(),
+        )
+        .oneshot(req)
+        .await
+        .unwrap();
         let bytes = to_bytes(res.into_body(), usize::MAX).await.unwrap();
         let body: String = String::from_utf8(bytes.to_vec()).unwrap();
         let todos: Vec<TodoEntity> = serde_json::from_str(&body)
@@ -244,10 +258,14 @@ mod tests {
             }"#
             .to_string(),
         );
-        let res = create_app(todo_repository, LabelRepositoryForMemory::new())
-            .oneshot(req)
-            .await
-            .unwrap();
+        let res = create_app(
+            todo_repository,
+            LabelRepositoryForMemory::new(),
+            "".to_string(),
+        )
+        .oneshot(req)
+        .await
+        .unwrap();
         let todo = res_to_todo(res).await;
         assert_eq!(expected, todo);
     }
@@ -265,10 +283,14 @@ mod tests {
             .await
             .expect("failed to create todo.");
         let req = build_todo_req_with_empty(Method::DELETE, "/todos/1");
-        let res = create_app(todo_repository, LabelRepositoryForMemory::new())
-            .oneshot(req)
-            .await
-            .unwrap();
+        let res = create_app(
+            todo_repository,
+            LabelRepositoryForMemory::new(),
+            "".to_string(),
+        )
+        .oneshot(req)
+        .await
+        .unwrap();
         assert_eq!(StatusCode::NO_CONTENT, res.status());
     }
 
@@ -285,6 +307,7 @@ mod tests {
         let res = create_app(
             TodoRepositoryForMemory::new(labels),
             LabelRepositoryForMemory::new(),
+            "".to_string(),
         )
         .oneshot(req)
         .await
@@ -303,10 +326,14 @@ mod tests {
             .expect("failed to create label.");
 
         let req = build_todo_req_with_empty(Method::GET, "/labels");
-        let res = create_app(TodoRepositoryForMemory::new(vec![label]), label_repository)
-            .oneshot(req)
-            .await
-            .unwrap();
+        let res = create_app(
+            TodoRepositoryForMemory::new(vec![label]),
+            label_repository,
+            "".to_string(),
+        )
+        .oneshot(req)
+        .await
+        .unwrap();
         let bytes = to_bytes(res.into_body(), usize::MAX).await.unwrap();
         let body: String = String::from_utf8(bytes.to_vec()).unwrap();
         let labels: Vec<Label> = serde_json::from_str(&body)
@@ -321,10 +348,14 @@ mod tests {
             .await
             .expect("failed to create label.");
         let req = build_todo_req_with_empty(Method::DELETE, "/labels/1");
-        let res = create_app(TodoRepositoryForMemory::new(vec![label]), label_repository)
-            .oneshot(req)
-            .await
-            .unwrap();
+        let res = create_app(
+            TodoRepositoryForMemory::new(vec![label]),
+            label_repository,
+            "".to_string(),
+        )
+        .oneshot(req)
+        .await
+        .unwrap();
         assert_eq!(StatusCode::NO_CONTENT, res.status());
     }
 
@@ -334,6 +365,7 @@ mod tests {
         let res = create_app(
             TodoRepositoryForMemory::new(vec![]),
             LabelRepositoryForMemory::new(),
+            "".to_string(),
         )
         .oneshot(req)
         .await
