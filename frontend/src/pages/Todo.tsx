@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
-import { Box, Stack, Button, Modal, TextInput, Text, AppShell, Group } from '@mantine/core';
+import { Box, Stack, Button, Modal, TextInput, Text, AppShell, Group, ActionIcon, Title, Grid } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconLabel, IconEdit } from '@tabler/icons-react';
+import { IconLabel, IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
 
 import { Label, NewLabelPayload, Todo, NewTodoPayload } from '../types/todo';
 import { addTodoItem, getTodoItems, updateTodoItem, deleteTodoItem } from '../lib/api/todo';
@@ -50,10 +50,11 @@ const Navbar: FC<Props> = ({
 
   return (
     <AppShell.Navbar p="md">
+      <Title order={4}>Labels</Title>
       <div className={classes.navbarMain}>{links}</div>
 
       <div className={classes.footer}>
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a href="#" className={classes.link} onClick={(event) => { event.preventDefault(); open() }}>
           <IconEdit className={classes.linkIcon} stroke={1.5} />
           <span>Edit</span>
         </a>
@@ -64,27 +65,31 @@ const Navbar: FC<Props> = ({
         title="Create new label"
       >
         <Box>
-          <Stack>
-            <TextInput
-              placeholder="New label"
-              value={editName}
-              onChange={(event) => setEditName(event.currentTarget.value)}
-            />
-            <Box>
-              <Button onClick={onSubmit}>Submit</Button>
-            </Box>
-          </Stack>
-          <Stack>
-            {labels.map((label) => (
-              <Stack key={label.id}>
-                <Group>
-                  <Text>{label.name}</Text>
-                  <Button onClick={() => onDeleteLabel(label.id)}>Delete</Button>
-                </Group>
-              </Stack>
-            ))}
-          </Stack>
+          <Grid>
+            <Grid.Col span={12}>
+              <TextInput
+                placeholder="New label"
+                value={editName}
+                onChange={(event) => setEditName(event.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button onClick={onSubmit} leftSection={<IconPlus />} variant="light">Submit</Button>
+            </Grid.Col>
+          </Grid>
         </Box>
+        <Stack>
+          {labels.map((label) => (
+            <Stack key={label.id}>
+              <Group>
+                <ActionIcon onClick={() => onDeleteLabel(label.id)} color="red" variant="outline">
+                  <IconTrash />
+                </ActionIcon>
+                <Text>{label.name}</Text>
+              </Group>
+            </Stack>
+          ))}
+        </Stack>
       </Modal>
     </AppShell.Navbar>
   );
