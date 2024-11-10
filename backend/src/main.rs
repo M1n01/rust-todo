@@ -2,31 +2,26 @@ mod handlers;
 mod repositories;
 
 use crate::repositories::{
-    label::LabelRepositoryForDb,
+    label::{LabelRepository, LabelRepositoryForDb},
     todo::{TodoRepository, TodoRepositoryForDb},
 };
 use axum::{
-    extract::Extension,
     routing::{delete, get, post},
-    Router,
+    Extension, Router,
 };
-use dotenv::dotenv;
+// use dotenv::dotenv;
 use handlers::{
     label::{all_labels, create_label, delete_label},
     todo::{all_todos, create_todo, delete_todo, find_todo, update_todo},
 };
 use hyper::header::CONTENT_TYPE;
-use repositories::label::LabelRepository;
 use shuttle_runtime::CustomError;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 
 #[shuttle_runtime::main]
-async fn axum(
-    #[shuttle_shared_db::Postgres(local_uri = "postgres://postgres:admin@localhost:5432/todos")]
-    pool: PgPool,
-) -> shuttle_axum::ShuttleAxum {
+async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::ShuttleAxum {
     // loggingの初期化
     let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
     env::set_var("RUST_LOG", log_level);
@@ -46,15 +41,15 @@ async fn axum(
     //     database_url
     // ));
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
-        .await
-        .unwrap();
     let app = create_app(
         TodoRepositoryForDb::new(pool.clone()),
         LabelRepositoryForDb::new(pool.clone()),
     );
 
-    axum::serve(listener, app).await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    tracing::debug!("listening on {:?}", listener);
+
+    axum::serve(listener, app.clone()).await.unwrap();
 
     Ok(app.into())
 }

@@ -30,6 +30,7 @@ validator = { version = "0.14.0", features = ["derive"] }
 sqlx = { version = "0.7.1", features = ["runtime-tokio-rustls", "any", "postgres"] }
 dotenv = "0.15.0"
 tower-http = { version = "0.5.2", features = ["cors"] }
-shuttle-axum = "0.21.0"
-shuttle-runtime = "0.21.0"
-shuttle-shared-db = { version = "0.21.0", features = ["postgres", "sqlx"] }
+shuttle-axum = "0.47.0"
+shuttle-runtime = "0.47.0"
+shuttle-shared-db = { version = "0.47.0", features = ["postgres", "sqlx"] }
+shuttle-secrets = "0.38.0"
