@@ -1,4 +1,4 @@
-import type { Label, NewLabelPayload } from '../types/todo';
+import type { Label, NewLabelPayload } from '../../types/todo';
 
 export const getLabelItems = async () => {
   const res = await fetch('http://localhost:3000/labels');

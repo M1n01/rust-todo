@@ -75,7 +75,7 @@ $ pnpm dev
 ## ディレクトリ構造
 
 ```
- $ tree . -L 3 -I "node_modules|frontend/node_modules"
+$ tree . -L 3 -I "node_modules|frontend/node_modules"
 .
 ├── Makefile
 ├── README.md
