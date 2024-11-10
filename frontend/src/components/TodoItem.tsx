@@ -79,11 +79,7 @@ const TodoItem: FC<Props> = ({ todo, onUpdate, onDelete, labels }) => {
         onClose={handleCloseModal}
         title="Edit Todo"
       >
-        <Box
-          // style={{
-          //   ...modalInnerStyle,
-          // }}
-        >
+        <Box>
           <Stack>
             <TextInput
               value={editText}

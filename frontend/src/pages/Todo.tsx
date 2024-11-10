@@ -9,7 +9,7 @@ import { getLabelItems, addLabelItem, deleteLabelItem } from '../lib/api/label';
 import TodoForm from '../components/TodoForm';
 import TodoList from '../components/TodoList';
 import Layout from '../components/Layout';
-import classes from '../components/Navbar.module.css';
+import classes from './TodoNavbar.module.css';
 
 type Props = {
   labels: Label[];
