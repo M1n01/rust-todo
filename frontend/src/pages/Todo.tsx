@@ -165,7 +165,7 @@ const TodoPage: FC = () => {
     />} >
       <Box>
         <Stack>
-          <TodoForm onSubmit={onSubmit} />
+          <TodoForm onSubmit={onSubmit} labels={labels} />
           <TodoList todos={dispTodos} onUpdate={onUpdate} onDelete={onDelete} />
         </Stack>
       </Box>
