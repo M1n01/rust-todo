@@ -1,11 +1,10 @@
 import { FC } from 'react';
 import { AppShell } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import Navbar from './Navbar';
 import Header from './Header';
 import Footer from './Footer';
 
-const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout: FC<{ children: React.ReactNode; navbar: React.ReactNode }> = ({ children, navbar }) => {
   const [opened, { toggle }] = useDisclosure(false);
 
   return (
@@ -17,7 +16,7 @@ const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
       padding="md"
     >
       <Header opened={opened} toggle={toggle} />
-      <Navbar />
+      {navbar}
       <AppShell.Main>{children}</AppShell.Main>
       <Footer />
     </AppShell>

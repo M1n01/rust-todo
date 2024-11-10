@@ -4,14 +4,14 @@ import { MantineProvider } from '@mantine/core';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
-import Home from './pages/Home';
+import Todo from './pages/Todo';
 
 const App: FC = () => {
   return (
     <MantineProvider defaultColorScheme="dark">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Todo />} />
         </Routes>
       </BrowserRouter>
     </MantineProvider>
