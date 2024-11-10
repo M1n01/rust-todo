@@ -75,27 +75,35 @@ $ pnpm dev
 ## ディレクトリ構造
 
 ```
-$ tree . -L 3 -I "*/node_modules"
+ $ tree . -L 3 -I "node_modules|frontend/node_modules"
 .
 ├── Makefile
 ├── README.md
 ├── backend
 │   ├── Cargo.lock
 │   ├── Cargo.toml
+│   ├── migrations
+│   │   ├── 20241029134221_init.sql
+│   │   └── 20241105110528_label.sql
 │   ├── src
+│   │   ├── handlers
 │   │   ├── handlers.rs
 │   │   ├── main.rs
+│   │   ├── repositories
 │   │   └── repositories.rs
 │   └── target
 │       ├── CACHEDIR.TAG
 │       └── debug
 ├── compose.yml
+├── db
+│   └── Dockerfile
 ├── eslint.config.mjs
 ├── frontend
 │   ├── Dockerfile
 │   ├── index.html
 │   ├── package.json
 │   ├── pnpm-lock.yaml
+│   ├── postcss.config.cjs
 │   ├── public
 │   │   └── vite.svg
 │   ├── src
@@ -104,8 +112,10 @@ $ tree . -L 3 -I "*/node_modules"
 │   │   ├── assets
 │   │   ├── components
 │   │   ├── index.css
+│   │   ├── lib
 │   │   ├── main.tsx
 │   │   ├── pages
+│   │   ├── types
 │   │   └── vite-env.d.ts
 │   ├── tsconfig.app.json
 │   ├── tsconfig.json
@@ -114,7 +124,7 @@ $ tree . -L 3 -I "*/node_modules"
 ├── package.json
 └── pnpm-lock.yaml
 
-11 directories, 26 files
+17 directories, 30 files
 ```
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
