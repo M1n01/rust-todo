@@ -3,7 +3,7 @@ import { Box, Stack, Button, Modal, TextInput, Text, AppShell, Group, ActionIcon
 import { useDisclosure } from '@mantine/hooks';
 import { IconLabel, IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
 
-import { Label, NewLabelPayload, Todo, NewTodoPayload } from '../types/todo';
+import { Label, NewLabelPayload, Todo, UpdateTodoPayload, NewTodoPayload } from '../types/todo';
 import { addTodoItem, getTodoItems, updateTodoItem, deleteTodoItem } from '../lib/api/todo';
 import { getLabelItems, addLabelItem, deleteLabelItem } from '../lib/api/label';
 import TodoForm from '../components/TodoForm';
@@ -110,7 +110,7 @@ const TodoPage: FC = () => {
     setTodos(newTodos);
   };
 
-  const onUpdate = async (updatedTodo: Todo) => {
+  const onUpdate = async (updatedTodo: UpdateTodoPayload) => {
     await updateTodoItem(updatedTodo);
     // APIより再度Todo配列を取得
     const todos = await getTodoItems();
@@ -166,7 +166,7 @@ const TodoPage: FC = () => {
       <Box>
         <Stack>
           <TodoForm onSubmit={onSubmit} labels={labels} />
-          <TodoList todos={dispTodos} onUpdate={onUpdate} onDelete={onDelete} />
+          <TodoList todos={dispTodos} labels={labels} onUpdate={onUpdate} onDelete={onDelete} />
         </Stack>
       </Box>
     </Layout>
