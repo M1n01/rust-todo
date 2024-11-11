@@ -10,6 +10,7 @@
 		"typescript-eslint": "^8.8.1"
 	},
 	"scripts": {
-		"dev": "cd app && pnpm dev"
+		"dev": "cd app && pnpm dev",
+		"build": "cd app && pnpm build"
 	}
 }
