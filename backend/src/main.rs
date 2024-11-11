@@ -23,7 +23,9 @@ use shuttle_runtime::SecretStore;
 
 #[shuttle_runtime::main]
 async fn axum(
-    #[shuttle_shared_db::Postgres] pool: PgPool,
+    #[shuttle_shared_db::Postgres(
+        local_uri = "{secrets.LOCAL_DB_URI}"
+    )] pool: PgPool,
     #[shuttle_runtime::Secrets] secrets: SecretStore,
 ) -> shuttle_axum::ShuttleAxum {
     // loggingの初期化
