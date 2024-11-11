@@ -21,10 +21,10 @@ jobs:
           node-version: '20'        # nodeのバージョン20を指定
 
       - name: Install dependencies
-        run: pnpm install            # 依存関係をインストール
+        run: npm install            # 依存関係をインストール
 
       - name: Build Vite project
-        run: pnpm run build          # ビルドする
+        run: npm run build          # ビルドする
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25 # Vercelにデプロイする。
