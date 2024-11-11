@@ -19,9 +19,13 @@ use shuttle_runtime::CustomError;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
+use shuttle_runtime::SecretStore;
 
 #[shuttle_runtime::main]
-async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::ShuttleAxum {
+async fn axum(
+    #[shuttle_shared_db::Postgres] pool: PgPool,
+    #[shuttle_runtime::Secrets] secrets: SecretStore,
+) -> shuttle_axum::ShuttleAxum {
     // loggingの初期化
     let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
     env::set_var("RUST_LOG", log_level);
@@ -41,7 +45,7 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
     //     database_url
     // ));
 
-    let app_url = env::var("APP_URL").expect("APP_URL is not set.");
+    let app_url = secrets.get("APP_URL").expect("APP_URL is not set.");
 
     let app = create_app(
         TodoRepositoryForDb::new(pool.clone()),
