@@ -1,7 +1,7 @@
 {
 	"dependencies": {
 		"eslint": "^9.12.0",
-		"eslint-plugin-react-hooks": "^4.6.2",
+		"eslint-plugin-react-hooks": "5.1.0-rc-5c56b873-20241107",
 		"eslint-plugin-react-refresh": "^0.4.12",
 		"globals": "^15.11.0",
 		"husky": "^9.1.6",
