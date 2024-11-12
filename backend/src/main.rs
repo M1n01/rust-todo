@@ -48,6 +48,7 @@ async fn axum(
     // ));
 
     let app_url = secrets.get("APP_URL").expect("APP_URL is not set.");
+    tracing::debug!("app_url: {:?}", app_url);
 
     let app = create_app(
         TodoRepositoryForDb::new(pool.clone()),
@@ -55,7 +56,7 @@ async fn axum(
         app_url,
     );
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
     tracing::debug!("listening on {:?}", listener);
 
     axum::serve(listener, app.clone()).await.unwrap();
