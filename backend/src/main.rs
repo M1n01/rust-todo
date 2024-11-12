@@ -14,12 +14,13 @@ use handlers::{
     label::{all_labels, create_label, delete_label},
     todo::{all_todos, create_todo, delete_todo, find_todo, update_todo},
 };
-use hyper::header::CONTENT_TYPE;
+use hyper::header::{AUTHORIZATION, ACCEPT, CONTENT_TYPE};
 use shuttle_runtime::CustomError;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use shuttle_runtime::SecretStore;
+use std::time::Duration;
 
 #[shuttle_runtime::main]
 async fn axum(
@@ -78,7 +79,10 @@ fn create_app<Todo: TodoRepository, Label: LabelRepository>(
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::list(allowed_origins))
         .allow_methods(Any)
-        .allow_headers(vec![CONTENT_TYPE]);
+        .allow_headers(vec![AUTHORIZATION, ACCEPT, CONTENT_TYPE])
+        .allow_credentials(true)
+        .expose_headers(vec![CONTENT_TYPE])
+        .max_age(Duration::from_secs(3600));
 
     Router::new()
         .route("/", get(root))
