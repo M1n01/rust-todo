@@ -14,4 +14,9 @@ export default defineConfig({
       ],
     },
   },
+  define: {
+    'process.env.SHUTTLE_URL': JSON.stringify(
+      process.env.SHUTTLE_URL || 'http://localhost:8000',
+    ),
+  },
 });

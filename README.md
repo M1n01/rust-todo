@@ -68,7 +68,7 @@ $ pnpm dev
   http://localhost:5173/
 
 - バックエンド
-  http://localhost:3000/
+  http://localhost:8000/
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
