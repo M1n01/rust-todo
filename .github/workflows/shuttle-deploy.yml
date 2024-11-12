@@ -10,11 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: shuttle-hq/deploy-action@main
+      - uses: shuttle-hq/deploy-action@v2
         with:
-          deploy-key: ${{ secrets.SHUTTLE_API_KEY }}
-          working-directory: "backend"
-          name: "rust-todo"
-          allow-dirty: "true"
-          no-test: "true"
-          cargo-shuttle-version: "0.48.3"
+          shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
+          project-id: proj_01JCDRJC2Q5G9FNHKRXKK857KF
