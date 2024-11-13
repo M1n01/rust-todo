@@ -78,7 +78,14 @@ fn create_app<Todo: TodoRepository, Label: LabelRepository>(
 
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::list(allowed_origins))
-        .allow_methods(Any)
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+            Method::PATCH,
+            Method::DELETE,
+            Method::OPTIONS,
+        ])
         .allow_headers(vec![AUTHORIZATION, ACCEPT, CONTENT_TYPE])
         .allow_credentials(true)
         .expose_headers(vec![CONTENT_TYPE])
