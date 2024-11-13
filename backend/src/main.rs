@@ -14,19 +14,23 @@ use handlers::{
     label::{all_labels, create_label, delete_label},
     todo::{all_todos, create_todo, delete_todo, find_todo, update_todo},
 };
-use hyper::header::{AUTHORIZATION, ACCEPT, CONTENT_TYPE};
+use hyper::{
+    header::{
+        ACCEPT, ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_REQUEST_METHOD, AUTHORIZATION,
+        CONTENT_TYPE, ORIGIN,
+    },
+    Method,
+};
 use shuttle_runtime::CustomError;
+use shuttle_runtime::SecretStore;
 use sqlx::PgPool;
+use std::time::Duration;
 use std::{env, sync::Arc};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
-use shuttle_runtime::SecretStore;
-use std::time::Duration;
 
 #[shuttle_runtime::main]
 async fn axum(
-    #[shuttle_shared_db::Postgres(
-        local_uri = "{secrets.LOCAL_DB_URI}"
-    )] pool: PgPool,
+    #[shuttle_shared_db::Postgres(local_uri = "{secrets.LOCAL_DB_URI}")] pool: PgPool,
     #[shuttle_runtime::Secrets] secrets: SecretStore,
 ) -> shuttle_axum::ShuttleAxum {
     // loggingの初期化
@@ -86,7 +90,14 @@ fn create_app<Todo: TodoRepository, Label: LabelRepository>(
             Method::DELETE,
             Method::OPTIONS,
         ])
-        .allow_headers(vec![AUTHORIZATION, ACCEPT, CONTENT_TYPE])
+        .allow_headers(vec![
+            AUTHORIZATION,
+            ACCEPT,
+            CONTENT_TYPE,
+            ORIGIN,
+            ACCESS_CONTROL_ALLOW_HEADERS,
+            ACCESS_CONTROL_REQUEST_METHOD,
+        ])
         .allow_credentials(true)
         .expose_headers(vec![CONTENT_TYPE])
         .max_age(Duration::from_secs(3600));
