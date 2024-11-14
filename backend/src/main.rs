@@ -85,10 +85,10 @@ fn create_app<Todo: TodoRepository, Label: LabelRepository>(
             ACCEPT,
             CONTENT_TYPE,
             ORIGIN,
-            ACCESS_CONTROL_ALLOW_HEADERS,
-            ACCESS_CONTROL_REQUEST_METHOD,
+            // ACCESS_CONTROL_ALLOW_HEADERS,
+            // ACCESS_CONTROL_REQUEST_METHOD,
         ])
-        .allow_credentials(true)
+        .allow_credentials(false)
         .expose_headers(vec![CONTENT_TYPE])
         .max_age(Duration::from_secs(3600));
 
