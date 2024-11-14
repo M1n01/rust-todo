@@ -26,7 +26,7 @@ use shuttle_runtime::SecretStore;
 use sqlx::PgPool;
 use std::time::Duration;
 use std::{env, sync::Arc};
-use tower_http::cors::{AllowOrigin, Any, CorsLayer};
+use tower_http::cors::{AllowOrigin, CorsLayer};
 
 #[shuttle_runtime::main]
 async fn axum(
@@ -41,16 +41,6 @@ async fn axum(
         .run(&pool)
         .await
         .map_err(CustomError::new)?;
-
-    // tracing_subscriber::fmt::init();
-    // dotenv().ok();
-
-    // let database_url = &env::var("DATABASE_URL").expect("DATABASE_URL is not set.");
-    // tracing::debug!("start connect database to {}", database_url);
-    // let pool = PgPool::connect(database_url).await.expect(&format!(
-    //     "Failed to connect database, url is {}",
-    //     database_url
-    // ));
 
     let app_url = secrets.get("APP_URL").expect("APP_URL is not set.");
     tracing::debug!("app_url: {:?}", app_url);
