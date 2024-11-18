@@ -9,7 +9,7 @@ use axum::{
     routing::{delete, get, post},
     Extension, Router,
 };
-// use dotenv::dotenv;
+
 use handlers::{
     label::{all_labels, create_label, delete_label},
     todo::{all_todos, create_todo, delete_todo, find_todo, update_todo},
