@@ -11,8 +11,7 @@ const Hello: FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const WORKER_URL = import.meta.env.VITE_WORKER_URL;
-      const response = await fetch(`${WORKER_URL}/hello`);
+      const response = await fetch('https://rust-todo-worker.abe-minato-bz.workers.dev/hello');
       if (!response.ok) throw new Error('Request failed');
       const data = await response.json();
       setMessage(data.message);
