@@ -1,7 +1,7 @@
 import type { Label, NewLabelPayload } from '../../types/todo';
 
 export const getLabelItems = async () => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const res = await fetch(`${rust_url}/labels`);
   if (!res.ok) {
     throw new Error('Failed to fetch label items');
@@ -11,7 +11,7 @@ export const getLabelItems = async () => {
 };
 
 export const addLabelItem = async (payload: NewLabelPayload) => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const res = await fetch(`${rust_url}/labels`, {
     method: 'POST',
     headers: {
@@ -27,7 +27,7 @@ export const addLabelItem = async (payload: NewLabelPayload) => {
 };
 
 export const deleteLabelItem = async (id: number) => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const res = await fetch(`${rust_url}/labels/${id}`, {
     method: 'DELETE',
   });
