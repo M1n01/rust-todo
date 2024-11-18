@@ -7,11 +7,13 @@ const Hello: FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const WORKER_URL = import.meta.env.VITE_WORKER_URL as string;
+
   const fetchHello = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('https://worker.abe-minato-bz.workers.dev/hello');
+      const response = await fetch(`${WORKER_URL}/hello`);
       if (!response.ok) throw new Error('Request failed');
       const data = await response.json();
       setMessage(data.message);
