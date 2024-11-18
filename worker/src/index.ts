@@ -1,6 +1,6 @@
 // worker/src/index.ts
 interface Env {
-  // 必要な環境変数があれば定義
+  SHUTTLE_URL: string;
 }
 
 export default {
@@ -24,6 +24,28 @@ export default {
 
     // URLパスの取得
     const url = new URL(request.url);
+
+    if (url.pathname === '/shuttle') {
+      try {
+        const response = await fetch(`${env.SHUTTLE_URL}`);
+
+        const text = await response.text();
+        return new Response(JSON.stringify({ message: text }), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ message: 'Failed to fetch from shuttle' }), {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        });
+      }
+    }
 
     // /hello エンドポイントの処理
     if (url.pathname === '/hello') {

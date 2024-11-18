@@ -22,7 +22,8 @@ enabled = true
 # - https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/workers/configuration/secrets/
-# [vars]
+[vars]
+SHUTTLE_URL = "https://rust-todo-c0na.shuttle.app"
 # MY_VARIABLE = "production_value"
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
