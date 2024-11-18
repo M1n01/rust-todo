@@ -10,8 +10,9 @@ const Shuttle: FC = () => {
   const fetchFromShuttle = async () => {
     setLoading(true);
     setError(null);
+    const SHATTLE_URL = import.meta.env.VITE_SHUTTLE_URL as string;
     try {
-      const response = await fetch('https://your-worker.workers.dev/shuttle');
+      const response = await fetch(`${SHATTLE_URL}/shuttle`);
       if (!response.ok) throw new Error('Request failed');
       const data = await response.json();
       setMessage(data.message);
