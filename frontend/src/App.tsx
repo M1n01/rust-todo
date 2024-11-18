@@ -6,6 +6,7 @@ import './App.css';
 
 import Todo from './pages/Todo';
 import Hello from './pages/Hello';
+import Shuttle from './pages/Shuttle';
 
 const App: FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: FC = () => {
         <Routes>
           <Route path="/" element={<Todo />} />
           <Route path="/hello" element={<Hello />} />
+          <Route path="/shuttle" element={<Shuttle />} />
         </Routes>
       </BrowserRouter>
     </MantineProvider>
