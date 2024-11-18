@@ -11,7 +11,7 @@ const Hello: FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('https://rust-todo-worker.abe-minato-bz.workers.dev/hello');
+      const response = await fetch('https://worker.abe-minato-bz.workers.dev/hello');
       if (!response.ok) throw new Error('Request failed');
       const data = await response.json();
       setMessage(data.message);
