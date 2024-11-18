@@ -27,7 +27,7 @@ export default {
 
     if (url.pathname === '/shuttle') {
       try {
-        const response = await fetch(`${env.SHUTTLE_URL}`);
+        const response = await fetch(`${env.SHUTTLE_URL}/`);
 
         const text = await response.text();
         return new Response(JSON.stringify({ message: text }), {
