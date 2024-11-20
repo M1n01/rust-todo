@@ -51,10 +51,10 @@ async fn axum(
         app_url,
     );
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
-    tracing::debug!("listening on {:?}", listener);
+    // let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    // tracing::debug!("listening on {:?}", listener);
 
-    axum::serve(listener, app.clone()).await.unwrap();
+    // axum::serve(listener, app.clone()).await.unwrap();
 
     Ok(app.into())
 }
