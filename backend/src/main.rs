@@ -67,6 +67,7 @@ fn create_app<Todo: TodoRepository, Label: LabelRepository>(
     let allowed_origins = vec![
         "http://localhost:5173".parse().unwrap(),
         "http://127.0.0.1:5173".parse().unwrap(),
+        "https://rust-todo.pages.dev".parse().unwrap(), // 追加
         app_url.parse().unwrap(),
     ];
 
