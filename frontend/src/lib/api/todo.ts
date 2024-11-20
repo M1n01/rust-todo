@@ -1,7 +1,7 @@
 import type { NewTodoPayload, Todo, UpdateTodoPayload } from '../../types/todo';
 
 export const addTodoItem = async (payload: NewTodoPayload) => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const res = await fetch(`${rust_url}/todos`, {
     method: 'POST',
     headers: {
@@ -17,7 +17,7 @@ export const addTodoItem = async (payload: NewTodoPayload) => {
 };
 
 export const getTodoItems = async () => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const res = await fetch(`${rust_url}/todos`);
   if (!res.ok) {
     throw new Error('Failed to fetch todo items');
@@ -27,7 +27,7 @@ export const getTodoItems = async () => {
 };
 
 export const updateTodoItem = async (todo: UpdateTodoPayload) => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const { id, ...updateTodo } = todo;
   const res = await fetch(`${rust_url}/todos/${id}`, {
     method: 'PATCH',
@@ -44,7 +44,7 @@ export const updateTodoItem = async (todo: UpdateTodoPayload) => {
 };
 
 export const deleteTodoItem = async (id: number) => {
-  const rust_url = process.env.SHUTTLE_URL ?? 'http://localhost:8000';
+  const rust_url = process.env.VITE_SHUTTLE_URL ?? 'http://localhost:8000';
   const res = await fetch(`${rust_url}/todos/${id}`, {
     method: 'DELETE',
   });
