@@ -42,7 +42,7 @@ async fn axum(
         .await
         .map_err(CustomError::new)?;
 
-    let app_url = secrets.get("APP_URL").expect("APP_URL is not set.");
+    let app_url = secrets.get("APP_URL").expect("undefined [APP_URL]");
     tracing::debug!("app_url: {:?}", app_url);
 
     let app = create_app(
